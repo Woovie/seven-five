@@ -3,6 +3,8 @@ units:
   $default_width: u
   $default_height: u
 
+  switch_hole: 14
+
   r5_mod: 1.5u
   r5_bar: 7u
 
@@ -49,6 +51,8 @@ points:
           r4:
             width: lmod_r4
             shift: [lmod_shift_r4, 0]
+            tags:
+              2ustab: true
           r3:
             width: lmod_r3
             shift: [lmod_shift_r3, 0]
@@ -72,6 +76,8 @@ points:
           r4:
             width: rmod_r4
             shift: [rmod_shift_r4, 0]
+            tags:
+              2ustab: true
           r3:
             shift: [-(rmod_shift_r4 - alpha_shift_r4) + alpha_shift_r3, 0]
       c13:
@@ -80,6 +86,8 @@ points:
           r3:
             width: rmod_r3
             shift: [rmod_shift_r3, 0]
+            tags:
+              2ustab: true
           r2:
             shift: [-(rmod_shift_r3 - alpha_shift_r3) + alpha_shift_r2]
       c14:
@@ -92,6 +100,8 @@ points:
           r1:
             width: rmod_r1
             shift: [rmod_shift_r1, 0]
+            tags:
+              2ustab: true
   zones.r5:
     anchor:
       ref: alpha_c1_r4
@@ -103,8 +113,11 @@ points:
         key.width: r5_mod
         key.shift: [r5_mod, 0]
       c3:
-        key.width: r5_bar
-        key.shift: [r5_mod * 2.5 + u, 0]
+        key:
+          width: r5_bar
+          shift: [r5_mod * 2.5 + u, 0]
+          tags:
+            7ustab: true
       c4:
         key.width: r5_mod
         key.shift: [r5_bar + r5_mod - u/2, 0]
@@ -173,8 +186,40 @@ points:
       keys: true
 
 outlines:
-  test:
+  plate:
     - operation: add
       where: keys
       what: rectangle
-      size: [14, 14]
+      size: switch_hole
+    - operation: add
+      what: rectangle
+      size: [7, 14]
+      bound: false
+      where: 2ustab
+      adjust:
+        shift: [-(switch_hole / 2 + 1.44 + 3.5), -1]
+    - operation: add
+      what: rectangle
+      size: [7, 14]
+      bound: false
+      where: 2ustab
+      adjust:
+        shift: [switch_hole / 2 + 1.44 + 3.5, -1]
+    - operation: add
+      what: rectangle
+      size: [7, 14]
+      bound: false
+      where: 7ustab
+      adjust:
+        shift: [-u*3, -1]
+    - operation: add
+      what: rectangle
+      size: [7, 14]
+      bound: false
+      where: 7ustab
+      adjust:
+        shift: [u*3, 0]
+    - operation: add
+      what: rectangle
+      size: [switch_hole * 2, switch_hole]
+      where: alpha_c12_r4
