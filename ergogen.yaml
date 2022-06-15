@@ -186,7 +186,7 @@ points:
       keys: true
 
 outlines:
-  plate:
+  key_cutouts:
     - operation: add
       where: keys
       what: rectangle
@@ -223,3 +223,114 @@ outlines:
       what: rectangle
       size: [switch_hole * 2, switch_hole]
       where: alpha_c12_r4
+  plate_tab_outline:
+    left_rect_fix:
+      operation: stack
+      what: polygon
+      points:
+        - shift: [0, 0]
+        - shift: [4.75, 0]
+        - shift: [0, 3]
+        - shift: [-3, 0]
+          orient: -15
+        - shift: [-3.25, 0]
+          orient: 90
+    right_rect_fix:
+      operation: add
+      what: polygon
+      points:
+        - shift: [9.5, 0]
+        - shift: [-4.75, 0]
+        - shift: [0, 3]
+        - shift: [3, 0]
+          orient: 15
+        - shift: [-3.25, 0]
+          orient: 90
+    main_circle:
+      operation: add
+      what: circle
+      radius: 3
+      adjust:
+        shift: [4.75, 3]
+    left_sphere:
+      operation: subtract
+      what: circle
+      radius: 1
+      adjust:
+        shift: [0, 1]
+    right_sphere:
+      operation: subtract
+      what: circle
+      radius: 1
+      adjust:
+        shift: [9.5, 1]
+  plate_tab:
+    tab:
+      name: plate_tab_outline
+      operation: stack
+    hole:
+      operation: subtract
+      what: circle
+      radius: 1.5
+      adjust:
+        shift: [4.75, 3]
+  plate:
+    - operation: stack
+      name: key_cutouts
+    - operation: stack
+      what: polygon
+      points:
+        - ref: f_keys_c1
+          shift: [-u / 2 - 1, u / 2 + 1]
+        - ref: f_keys_c14
+          shift: [u / 2 + 1, u / 2 + 1]
+        - shift: [0, -u * 6.5 - 2]
+        - ref: f_keys_c1
+          shift: [-u / 2 - 1, -6u - 1]
+      fillet: 0.5
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c1
+      adjust:
+        shift: [-u / 2 + 1, u / 2 + 1]
+    - operation: add
+      name: plate_tab
+      where: f_keys_c5
+      adjust:
+        shift: [-4.75, u / 2 + 1]
+    - operation: add
+      name: plate_tab
+      where: f_keys_c10
+      adjust:
+        shift: [-4.75, u / 2 + 1]
+    - operation: add
+      name: plate_tab
+      where: f_keys_c14
+      adjust:
+        shift: [-1, u / 2 + 1]
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c1
+      adjust:
+        shift: [1, -u*6 - 1]
+        rotate: 180
+    - operation: add
+      name: plate_tab
+      where: f_keys_c5
+      adjust:
+        shift: [4.75, -u*6 - 1]
+        rotate: 180
+    - operation: add
+      name: plate_tab
+      where: f_keys_c10
+      adjust:
+        shift: [4.75, -u*6 - 1]
+        rotate: 180
+    - operation: add
+      name: plate_tab
+      where: f_keys_c14
+      adjust:
+        shift: [u / 2 - 1, -u*6 - 1]
+        rotate: 180
