@@ -34,7 +34,24 @@ units:
 
   f_row_offset: u * 1.5
 
+  # editable
+  tangent_angle: -30
+  screw_size: 2.5
+  tangent_distance: 2
+  tab_circle_edge_thickness: 2
+  foot_radius: 3
+  # editable
+
+  tangent_distance_formula: (screw_size + 0.5) + tangent_distance
+  tab_circle_formula: (screw_size + 0.5) + tab_circle_edge_thickness
+  tab_circle_cutout_formula: (screw_size + 0.5)
+
 points:
+  zones.origin:
+    key:
+      width: 0
+      height: 0
+      bind: [0, 0, 0, 0]
   zones.alpha:
     rows:
       r4:
@@ -223,57 +240,112 @@ outlines:
       what: rectangle
       size: [switch_hole * 2, switch_hole]
       where: alpha_c12_r4
-  plate_tab_outline:
-    left_rect_fix:
-      operation: stack
+
+  plate_tab:
+    - operation: stack
       what: polygon
       points:
         - shift: [0, 0]
-        - shift: [4.75, 0]
-        - shift: [0, 3]
-        - shift: [-3, 0]
-          orient: -15
-        - shift: [-3.25, 0]
+        - shift: [0, foot_radius]
+        - shift: [foot_radius, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
           orient: 90
-    right_rect_fix:
-      operation: add
-      what: polygon
-      points:
-        - shift: [9.5, 0]
-        - shift: [-4.75, 0]
-        - shift: [0, 3]
-        - shift: [3, 0]
-          orient: 15
-        - shift: [-3.25, 0]
+        - shift: [tab_circle_formula, 0]
+          orient: -90
+        - shift: [tab_circle_formula, 0]
+          orient: -tangent_angle*2
+        - shift: [tangent_distance_formula, 0]
+          orient: -90
+        - shift: [foot_radius, 0]
           orient: 90
-    main_circle:
-      operation: add
-      what: circle
-      radius: 3
+        - shift: [foot_radius, 0]
+          orient: tangent_angle - 90
       adjust:
-        shift: [4.75, 3]
-    left_sphere:
-      operation: subtract
+        - shift: [0, foot_radius]
+        - shift: [-foot_radius, 0]
+          orient: tangent_angle
+        - shift: [-tangent_distance_formula, 0]
+          orient: 90
+        - shift: [-tab_circle_formula, 0]
+          orient: -90
+        - shift: [0, 0]
+          orient: -tangent_angle
+        - ref: origin
+          affect: y
+    - operation: subtract
       what: circle
-      radius: 1
+      radius: foot_radius
+      where:
+        shift: [0, foot_radius]
       adjust:
-        shift: [0, 1]
-    right_sphere:
-      operation: subtract
+        - shift: [0, foot_radius]
+        - shift: [tab_circle_formula, 0]
+          orient: -tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: -90
+        - shift: [-foot_radius, 0]
+          orient: -90
+        - ref: origin
+          affect: y
+    - operation: subtract
       what: circle
-      radius: 1
+      radius: foot_radius
+      where:
+        shift: [0, foot_radius]
       adjust:
-        shift: [9.5, 1]
-  plate_tab:
-    tab:
-      name: plate_tab_outline
-      operation: stack
-    hole:
-      operation: subtract
+        - shift: [0, foot_radius]
+        - shift: [-tab_circle_formula, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: -90
+        - shift: [-foot_radius, 0]
+          orient: 90
+        - ref: origin
+          affect: y
+    - operation: add
       what: circle
-      radius: 1.5
+      radius: tab_circle_formula
       adjust:
-        shift: [4.75, 3]
+        - shift: [0, foot_radius]
+        - shift: [-tab_circle_formula, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: -90
+        - shift: [-foot_radius, 0]
+          orient: 90
+        - ref: origin
+          affect: y
+        - shift: [0, foot_radius]
+          orient: -tangent_angle
+        - shift: [foot_radius, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: 90
+        - shift: [tab_circle_formula, 0]
+          orient: -90
+    - operation: subtract
+      what: circle
+      radius: tab_circle_cutout_formula
+      adjust:
+        - shift: [0, foot_radius]
+        - shift: [-tab_circle_formula, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: -90
+        - shift: [-foot_radius, 0]
+          orient: 90
+        - ref: origin
+          affect: y
+        - shift: [0, foot_radius]
+          orient: -tangent_angle
+        - shift: [foot_radius, 0]
+          orient: tangent_angle
+        - shift: [tangent_distance_formula, 0]
+          orient: 90
+        - shift: [tab_circle_formula, 0]
+          orient: -90
+
   plate:
     - operation: stack
       name: key_cutouts
@@ -293,44 +365,50 @@ outlines:
       name: plate_tab
       where: f_keys_c1
       adjust:
-        shift: [-u / 2 + 1, u / 2 + 1]
-    - operation: add
-      name: plate_tab
-      where: f_keys_c5
-      adjust:
-        shift: [-4.75, u / 2 + 1]
-    - operation: add
-      name: plate_tab
-      where: f_keys_c10
-      adjust:
-        shift: [-4.75, u / 2 + 1]
+        shift: [0, u / 2 + 1]
+
     - operation: add
       name: plate_tab
       where: f_keys_c14
       adjust:
-        shift: [-1, u / 2 + 1]
+        shift: [0, u / 2 + 1]
 
     - operation: add
       name: plate_tab
       where: f_keys_c1
       adjust:
-        shift: [1, -u*6 - 1]
-        rotate: 180
-    - operation: add
-      name: plate_tab
-      where: f_keys_c5
-      adjust:
-        shift: [4.75, -u*6 - 1]
-        rotate: 180
-    - operation: add
-      name: plate_tab
-      where: f_keys_c10
-      adjust:
-        shift: [4.75, -u*6 - 1]
-        rotate: 180
+        shift: [u * 5, u / 2 + 1]
+
     - operation: add
       name: plate_tab
       where: f_keys_c14
       adjust:
-        shift: [u / 2 - 1, -u*6 - 1]
+        shift: [-(u * 5), u / 2 + 1]
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c1
+      adjust:
+        shift: [0, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c14
+      adjust:
+        shift: [0, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c1
+      adjust:
+        shift: [u * 5, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab
+      where: f_keys_c14
+      adjust:
+        shift: [-(u * 5), -(u * 6) - 1]
         rotate: 180
