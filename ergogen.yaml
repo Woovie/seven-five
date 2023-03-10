@@ -3,6 +3,8 @@ units:
   $default_width: u
   $default_height: u
 
+  inch: 25.4
+
   switch_hole: 14
 
   r5_mod: 1.5u
@@ -53,6 +55,14 @@ units:
   stabilizer_spacing_3u: u * ((3 - 1) / 2)
   stabilizer_spacing_7u: u * ((7 - 1) / 2)
   stabilizer_spacing_2u: u / 2 + stabilizer_width / 2 + ((23.8 / 2) - (14 / 2) - (stabilizer_width / 2))
+
+  plate_border: 1
+
+  oring_radius: 1/8inch
+  oring_catch_radius: 5
+  oring_inset: oring_catch_radius / 2
+
+  pcb_border: 7 + oring_radius
 
 points:
   zones.origin:
@@ -221,7 +231,6 @@ points:
         shift: [2u, 0]
         tags:
           3u_stabilizers: true
-
   key:
     tags:
       keys: true
@@ -313,6 +322,13 @@ outlines:
         - shift: [tab_circle_formula, 0]
           orient: -90
     - operation: subtract
+      what: rectangle
+      size: [20, 15]
+      where:
+        shift: [0, -7.5]
+
+  plate_tab_hole:
+    - operation: stack
       what: circle
       radius: tab_circle_cutout_formula
       adjust:
@@ -333,11 +349,13 @@ outlines:
           orient: 90
         - shift: [tab_circle_formula, 0]
           orient: -90
-    - operation: subtract
-      what: rectangle
-      size: [20, 15]
+
+  oring_catch:
+    - operation: stack
+      what: circle
+      radius: oring_catch_radius
       where:
-        shift: [0, -7.5]
+        shift: [0, 0.5u + plate_border + oring_catch_radius - oring_inset]
 
   7u_stabilizer: # This creates the stabilizer, you just need to use its name in a `where` clause of another outline
     - operation: stack
@@ -440,6 +458,112 @@ outlines:
         shift: [-(u * 5), -(u * 6) - 1]
         rotate: 180
 
+  plate_tab_holes:
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c1
+      adjust:
+        shift: [0, u / 2 + 1]
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c14
+      adjust:
+        shift: [0, u / 2 + 1]
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c1
+      adjust:
+        shift: [u * 5, u / 2 + 1]
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c14
+      adjust:
+        shift: [-(u * 5), u / 2 + 1]
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c1
+      adjust:
+        shift: [0, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c14
+      adjust:
+        shift: [0, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c1
+      adjust:
+        shift: [u * 5, -(u * 6) - 1]
+        rotate: 180
+
+    - operation: add
+      name: plate_tab_hole
+      where: f_keys_c14
+      adjust:
+        shift: [-(u * 5), -(u * 6) - 1]
+        rotate: 180
+
+  oring_catches:
+    - operation: stack
+      name: oring_catch
+      where: f_keys_c1
+      adjust:
+        shift: [0.75u, 0]
+      
+    - operation: stack
+      name: oring_catch
+      where: f_keys_c1
+      adjust:
+        shift: [5.25u, 0]
+
+    - operation: stack
+      name: oring_catch
+      where: f_keys_c1
+      adjust:
+        shift: [9.75u, 0]
+
+    - operation: stack
+      name: oring_catch
+      where: f_keys_c1
+      adjust:
+        shift: [14.25u, 0]
+
+    - operation: stack
+      name: oring_catch
+      where: sixtyfive_row_c1_r5
+      adjust:
+        shift: [-0.75u, 0]
+        rotate: 180
+
+    - operation: stack
+      name: oring_catch
+      where: sixtyfive_row_c1_r5
+      adjust:
+        shift: [-5.25u, 0]
+        rotate: 180
+
+    - operation: stack
+      name: oring_catch
+      where: sixtyfive_row_c1_r5
+      adjust:
+        shift: [-9.75u, 0]
+        rotate: 180
+
+    - operation: stack
+      name: oring_catch
+      where: sixtyfive_row_c1_r5
+      adjust:
+        shift: [-14.25u, 0]
+        rotate: 180
+
   key_cutouts:
     - operation: add
       where: keys
@@ -451,21 +575,41 @@ outlines:
       size: [switch_hole * 2, switch_hole]
       where: alpha_c12_r4
 
-  sevenfive_plate:
+  plate_outline:
     - operation: stack
       what: polygon
       points:
         - ref: f_keys_c1
-          shift: [-u / 2 - 1, u / 2 + 1]
+          shift: [-u / 2 - plate_border, u / 2 + plate_border]
         - ref: f_keys_c14
-          shift: [u / 2 + 1, u / 2 + 1]
-        - shift: [0, -u * 6.5 - 2]
+          shift: [u / 2 + plate_border, u / 2 + plate_border]
+        - shift: [0, -u * 6.5 - 2plate_border]
         - ref: f_keys_c1
-          shift: [-u / 2 - 1, -6u - 1]
+          shift: [-u / 2 - plate_border, -6u - plate_border]
+
+  pcb_outline:
+    - operation: stack
+      what: polygon
+      points:
+        - ref: f_keys_c1
+          shift: [-pcb_border, pcb_border]
+        - ref: f_keys_c14
+          shift: [pcb_border, pcb_border]
+        - shift: [0, -6.5u]
+        - ref: f_keys_c1
+          shift: [-u / 2 - plate_border, -6u - plate_border]
+
+  pcb_cutout:
+    - operation: stack
+      name: pcb_outline
+
+    - operation: subtract
+      name: oring_catches
       fillet: 0.5
 
-    - operation: add
-      name: plate_tabs
+  sevenfive_plate:
+    - operation: stack
+      name: plate_outline
 
     - operation: subtract
       name: key_cutouts
@@ -478,3 +622,24 @@ outlines:
 
     - operation: subtract
       name: 3u_stabilizer
+
+  case_top_plate:
+    - operation: add
+      name: plate_outline
+      expand: 2
+
+  case_top_keycaps:
+    - operation: stack
+      what: rectangle
+      size: [9.525 + 15.5u, 9.525 + 6u]
+      where:
+        ref: f_keys_c1
+        shift: [-9.525/2 + 7.75u, 9.525/2 - 3u]
+
+  case_plate_combo_preview:
+    - operation: stack
+      name: case_top_plate
+    - operation: stack
+      name: case_top_keycaps
+    - operation: stack
+      name: pcb_cutout
