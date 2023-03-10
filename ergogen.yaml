@@ -35,16 +35,24 @@ units:
   f_row_offset: u * 1.5
 
   # editable
-  tangent_angle: -30
-  screw_size: 2.5
-  tangent_distance: 2
-  tab_circle_edge_thickness: 2
-  foot_radius: 3
+  tangent_angle: -20
+  screw_size: 1.5
+  tangent_distance: 1
+  tab_circle_edge_thickness: 1.5
+  foot_radius: 2.5
+  tolerance: 0.15
   # editable
 
-  tangent_distance_formula: (screw_size + 0.5) + tangent_distance
-  tab_circle_formula: (screw_size + 0.5) + tab_circle_edge_thickness
-  tab_circle_cutout_formula: (screw_size + 0.5)
+  tangent_distance_formula: (screw_size + tolerance) + tangent_distance
+  tab_circle_formula: (screw_size + tolerance) + tab_circle_edge_thickness
+  tab_circle_cutout_formula: (screw_size + tolerance)
+
+  stabilizer_width: 7
+  stabilizer_height: 14
+  stabilizer_offset: -1
+  stabilizer_spacing_3u: u * ((3 - 1) / 2)
+  stabilizer_spacing_7u: u * ((7 - 1) / 2)
+  stabilizer_spacing_2u: u / 2 + stabilizer_width / 2 + ((23.8 / 2) - (14 / 2) - (stabilizer_width / 2))
 
 points:
   zones.origin:
@@ -69,7 +77,7 @@ points:
             width: lmod_r4
             shift: [lmod_shift_r4, 0]
             tags:
-              2ustab: true
+              2u_stabilizers: true
           r3:
             width: lmod_r3
             shift: [lmod_shift_r3, 0]
@@ -94,7 +102,7 @@ points:
             width: rmod_r4
             shift: [rmod_shift_r4, 0]
             tags:
-              2ustab: true
+              2u_stabilizers: true
           r3:
             shift: [-(rmod_shift_r4 - alpha_shift_r4) + alpha_shift_r3, 0]
       c13:
@@ -104,7 +112,7 @@ points:
             width: rmod_r3
             shift: [rmod_shift_r3, 0]
             tags:
-              2ustab: true
+              2u_stabilizers: true
           r2:
             shift: [-(rmod_shift_r3 - alpha_shift_r3) + alpha_shift_r2]
       c14:
@@ -118,7 +126,7 @@ points:
             width: rmod_r1
             shift: [rmod_shift_r1, 0]
             tags:
-              2ustab: true
+              2u_stabilizers: true
   zones.r5:
     anchor:
       ref: alpha_c1_r4
@@ -134,7 +142,7 @@ points:
           width: r5_bar
           shift: [r5_mod * 2.5 + u, 0]
           tags:
-            7ustab: true
+            7u_stabilizers: true
       c4:
         key.width: r5_mod
         key.shift: [r5_bar + r5_mod - u/2, 0]
@@ -198,49 +206,27 @@ points:
       c13:
       c14:
         key.spread: u * 1.5
+  zones.split_space1:
+    anchor:
+      ref: r5_c3
+      shift: [-2u, 0]
+    columns:
+      c1.key:
+        width: 3u
+        tags:
+          3u_stabilizers: true
+      c2.key.shift: [1u, 0]
+      c3.key:
+        width: 3u
+        shift: [2u, 0]
+        tags:
+          3u_stabilizers: true
+
   key:
     tags:
       keys: true
 
 outlines:
-  key_cutouts:
-    - operation: add
-      where: keys
-      what: rectangle
-      size: switch_hole
-    - operation: add
-      what: rectangle
-      size: [7, 14]
-      bound: false
-      where: 2ustab
-      adjust:
-        shift: [-(switch_hole / 2 + 1.44 + 3.5), -1]
-    - operation: add
-      what: rectangle
-      size: [7, 14]
-      bound: false
-      where: 2ustab
-      adjust:
-        shift: [switch_hole / 2 + 1.44 + 3.5, -1]
-    - operation: add
-      what: rectangle
-      size: [7, 14]
-      bound: false
-      where: 7ustab
-      adjust:
-        shift: [-u*3, -1]
-    - operation: add
-      what: rectangle
-      size: [7, 14]
-      bound: false
-      where: 7ustab
-      adjust:
-        shift: [u*3, 0]
-    - operation: add
-      what: rectangle
-      size: [switch_hole * 2, switch_hole]
-      where: alpha_c12_r4
-
   plate_tab:
     - operation: stack
       what: polygon
@@ -276,33 +262,35 @@ outlines:
     - operation: subtract
       what: circle
       radius: foot_radius
-      where:
-        shift: [0, foot_radius]
       adjust:
         - shift: [0, foot_radius]
-        - shift: [tab_circle_formula, 0]
-          orient: -tangent_angle
-        - shift: [tangent_distance_formula, 0]
-          orient: -90
         - shift: [-foot_radius, 0]
+          orient: tangent_angle
+        - shift: [-tangent_distance_formula, 0]
+          orient: 90
+        - shift: [-tab_circle_formula, 0]
           orient: -90
+        - shift: [0, 0]
+          orient: -tangent_angle
         - ref: origin
           affect: y
+        - shift: [0, foot_radius]
     - operation: subtract
       what: circle
       radius: foot_radius
-      where:
-        shift: [0, foot_radius]
       adjust:
         - shift: [0, foot_radius]
-        - shift: [-tab_circle_formula, 0]
+        - shift: [foot_radius, 0]
           orient: tangent_angle
         - shift: [tangent_distance_formula, 0]
-          orient: -90
-        - shift: [-foot_radius, 0]
           orient: 90
+        - shift: [tab_circle_formula, 0]
+          orient: -90
+        - shift: [0, 0]
+          orient: -tangent_angle
         - ref: origin
           affect: y
+        - shift: [0, foot_radius]
     - operation: add
       what: circle
       radius: tab_circle_formula
@@ -345,22 +333,61 @@ outlines:
           orient: 90
         - shift: [tab_circle_formula, 0]
           orient: -90
+    - operation: subtract
+      what: rectangle
+      size: [20, 15]
+      where:
+        shift: [0, -7.5]
 
-  plate:
+  7u_stabilizer: # This creates the stabilizer, you just need to use its name in a `where` clause of another outline
     - operation: stack
-      name: key_cutouts
+      where: 7u_stabilizers # Set this tag on the keys you want
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [stabilizer_spacing_7u, stabilizer_offset]
+      fillet: 0.5
     - operation: stack
-      what: polygon
-      points:
-        - ref: f_keys_c1
-          shift: [-u / 2 - 1, u / 2 + 1]
-        - ref: f_keys_c14
-          shift: [u / 2 + 1, u / 2 + 1]
-        - shift: [0, -u * 6.5 - 2]
-        - ref: f_keys_c1
-          shift: [-u / 2 - 1, -6u - 1]
+      where: 7u_stabilizers
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [-stabilizer_spacing_7u, stabilizer_offset]
       fillet: 0.5
 
+  3u_stabilizer: # This creates the stabilizer, you just need to use its name in a `where` clause of another outline
+    - operation: stack
+      where: 3u_stabilizers # Set this tag on the keys you want
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [stabilizer_spacing_3u, stabilizer_offset]
+      fillet: 0.5
+    - operation: stack
+      where: 3u_stabilizers
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [-stabilizer_spacing_3u, stabilizer_offset]
+      fillet: 0.5
+
+  2u_stabilizer:
+    - operation: stack
+      where: 2u_stabilizers # Set this tag on the keys you want
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [stabilizer_spacing_2u, stabilizer_offset]
+      fillet: 0.5
+    - operation: stack
+      where: 2u_stabilizers
+      what: rectangle
+      size: [stabilizer_width, stabilizer_height]
+      adjust:
+        shift: [-stabilizer_spacing_2u, stabilizer_offset]
+      fillet: 0.5
+
+  plate_tabs:
     - operation: add
       name: plate_tab
       where: f_keys_c1
@@ -412,3 +439,42 @@ outlines:
       adjust:
         shift: [-(u * 5), -(u * 6) - 1]
         rotate: 180
+
+  key_cutouts:
+    - operation: add
+      where: keys
+      what: rectangle
+      size: switch_hole
+      fillet: 0.5
+    - operation: add
+      what: rectangle
+      size: [switch_hole * 2, switch_hole]
+      where: alpha_c12_r4
+
+  sevenfive_plate:
+    - operation: stack
+      what: polygon
+      points:
+        - ref: f_keys_c1
+          shift: [-u / 2 - 1, u / 2 + 1]
+        - ref: f_keys_c14
+          shift: [u / 2 + 1, u / 2 + 1]
+        - shift: [0, -u * 6.5 - 2]
+        - ref: f_keys_c1
+          shift: [-u / 2 - 1, -6u - 1]
+      fillet: 0.5
+
+    - operation: add
+      name: plate_tabs
+
+    - operation: subtract
+      name: key_cutouts
+
+    - operation: subtract
+      name: 7u_stabilizer
+
+    - operation: subtract
+      name: 2u_stabilizer
+
+    - operation: subtract
+      name: 3u_stabilizer
